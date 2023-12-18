@@ -52,26 +52,33 @@ export default function useEvents() {
   }
 
   const updatePayment = useCallback(async (eventUUID: string, eventData: EventData, paymentReciept: File) => {
+    setLoading(true)
+    
     const fileReader = getBase64(paymentReciept);
 
     fileReader.onload = async () => {
-      const eventBody: EventData = {
-        ...eventData,
-        guests: eventData.guests.map(guest => {
-          if(guest.uuid === user.uuid) {
-            return {
-              ...guest,
-              paid: true,
-              receiptImage: fileReader.result as string
-            }
-          }
-          return guest
-        })
-      }
-      const { status } = await axios.put(`/api/events/${user.uuid}/${eventUUID}`, eventBody)
+      try {
 
-      if (status === 200) {
-        router.push('/events/')
+        const eventBody: EventData = {
+          ...eventData,
+          guests: eventData.guests.map(guest => {
+            if(guest.uuid === user.uuid) {
+              return {
+                ...guest,
+                paid: true,
+                receiptImage: fileReader.result as string
+              }
+            }
+            return guest
+          })
+        }
+        const { status } = await axios.put(`/api/events/${user.uuid}/${eventUUID}`, eventBody)
+  
+        if (status === 200) {
+          router.push('/events/')
+        }
+      } finally {
+        setLoading(false)
       }
     }
   }, [])
@@ -85,12 +92,26 @@ export default function useEvents() {
     }
   }, [])
 
+  const updateEvent = useCallback(async (eventUUID: string, eventData: EventData) => {
+    setLoading(true)
+    try {
+      const { status } = await axios.put(`/api/events/${user.uuid}/${eventUUID}`, eventData)
+  
+      if (status === 200) {
+        router.push('/events/')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   return {
     loadMyEvents,
     loadEventByUUID,
     postEvent,
     updatePayment,
     deleteEvent,
+    updateEvent,
     loading,
     events,
     event,

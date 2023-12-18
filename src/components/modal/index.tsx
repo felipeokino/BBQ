@@ -17,7 +17,7 @@ const Modal = ({handleClose, handleConfirm, handleCancel, children, confirmTitle
           <span className='text-black text-2xl mb-6'>
             Selecionar convidados
           </span>
-          <Button.Icon className='absolute top-1 right-1 border border-red-600 z-10' onClick={handleClose}>
+          <Button.Icon className='absolute top-1 right-1 z-10' onClick={handleClose}>
             <X color='red'size={20} />
           </Button.Icon>
           <section  className='h-[350px] overflow-auto w-full p-4 flex flex-col gap-2'>

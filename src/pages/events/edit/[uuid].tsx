@@ -1,6 +1,7 @@
 import Button from '@/components/button';
 import Input from '@/components/input';
 import isAuth from '@/components/isAuth';
+import Loading from '@/components/loading';
 import Modal from '@/components/modal';
 import useEvents from '@/hooks/useEvents';
 import useGuests from '@/hooks/useGuests';
@@ -18,13 +19,26 @@ const defaultValues = {
   guests: [] as User[]
 }
 
-const CreateEvent = () => {
-  const { postEvent } = useEvents()
+const EditEvent = () => {
+  const { updateEvent, loadEventByUUID, event, loading } = useEvents()
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({defaultValues});
   const [isOpen, setIsOpen] = useState(false)
   const [tempGuest, setTempGuest] = useState<string[]>([])
   const {guests, loadGuests} = useGuests();
   const router = useRouter();
+  const {uuid} = router.query as {uuid: string}
+
+  useEffect(() => {
+    loadEventByUUID(uuid)
+  }, [uuid])
+
+  useEffect(() => {
+    if (event) {
+      (Object.keys(defaultValues) as Array<keyof typeof defaultValues>).forEach(key => setValue(key, event[key]))
+      setTempGuest(event.guests.map(guest => guest.uuid))
+    }
+  
+  }, [event, setValue])
 
   useEffect(() => {
     loadGuests()
@@ -36,7 +50,9 @@ const CreateEvent = () => {
   }
 
   const onSubmit = (dataParams: any) => {
-    postEvent(dataParams)
+    updateEvent(uuid, {...event, ...dataParams}).then(() => {
+      router.push('/events')
+    })
   }
 
   const handleCancel = () => {
@@ -45,40 +61,45 @@ const CreateEvent = () => {
 
   return (
     <div className='flex flec-col gap-8 p-4 bg-white h-[calc(100vh-6rem)] w-full'>
-      
-      <div className='flex flex-col justify-start items-center p-4 text-black w-1/2 min-w-[600px] h-1/2 min-h-[600px]  mx-auto'>
-        
-        <span className='text-2xl'>Como vai ser o churras?</span>
-        <form className='flex flex-col gap-3' onSubmit={handleSubmit(onSubmit)}>
-          <Input register={register} required={true} name='description' label='Descrição' type='text' errors={errors.description}/>
-          <Input register={register} required={true}  name='date' label='Data do churras' type='date' errors={errors.date}/>
-          <Input register={register} required={true} name='observations' label='Observações' type='text' errors={errors.observations}/>
-          <Input register={register} required={true} name='amountValue' label='Total' type='number' errors={errors.amountValue}/>
-          <Input register={register} required={false}  name='beverageIncluded' label='Bebida inclusa?' type='checkbox' />
+      {loading ? (
+        <Loading  />
+      ): (
+        <>
+          <div className='flex flex-col justify-start items-center p-4 text-black w-1/2 min-w-[600px] h-1/2 min-h-[600px]  mx-auto'>
+            <span className='text-2xl'>Como vai ser o churras?</span>
+            <form className='flex flex-col gap-3' onSubmit={handleSubmit(onSubmit)}>
+              <Input register={register} required={true} name='description' label='Descrição' type='text' errors={errors.description}/>
+              <Input register={register} required={true}  name='date' label='Data do churras' type='date' errors={errors.date}/>
+              <Input register={register} required={true} name='observations' label='Observações' type='text' errors={errors.observations}/>
+              <Input register={register} required={true} name='amountValue' label='Total' type='number' errors={errors.amountValue}/>
+              <Input register={register} required={false}  name='beverageIncluded' label='Bebida inclusa?' type='checkbox' />
 
-          <Button.Container color='primary' type='button' onClick={handleCancel}>
-            <Button.Text title='Cancelar' />
-          </Button.Container>
-          <Button.Container color='primary' type='button' onClick={() => {
-            setIsOpen(true)
-          }}>
-            <Button.Text title='Add convidado' />
-          </Button.Container>
-          <Button.Container color='primary' type='submit'>
-            <Button.Text title='Finalizar' />
-          </Button.Container>
-          
-        </form>
-      </div>
-      {isOpen && 
-        <AddGuestModal 
-          handleAdd={handleAdd}
-          setIsOpen={setIsOpen}
-          setTempGuest={setTempGuest}
-          tempGuest={tempGuest}
-          guests={guests}
-        />
-      }
+              <Button.Container color='primary' type='button' onClick={handleCancel}>
+                <Button.Text title='Cancelar' />
+              </Button.Container>
+              <Button.Container color='primary' type='button' onClick={() => {
+                setIsOpen(true)
+              }}>
+                <Button.Text title='Add convidado' />
+              </Button.Container>
+              <Button.Container color='primary' type='submit'>
+                <Button.Text title='Finalizar' />
+              </Button.Container>
+              
+            </form>
+          </div>
+          {isOpen && 
+            <AddGuestModal 
+              handleAdd={handleAdd}
+              setIsOpen={setIsOpen}
+              setTempGuest={setTempGuest}
+              tempGuest={tempGuest}
+              guests={guests}
+            />
+          } 
+        </>
+      )}
+      
     </div>
   )
 }
@@ -122,4 +143,4 @@ const AddGuestModal = ({setIsOpen, setTempGuest, tempGuest, handleAdd, guests}: 
   )
 }
 
-export default isAuth(CreateEvent)
+export default isAuth(EditEvent)

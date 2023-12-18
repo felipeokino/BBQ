@@ -1,8 +1,10 @@
 import Button from '@/components/button';
 import Input from '@/components/input';
+import Loading from '@/components/loading';
 import Modal from '@/components/modal';
 import useEvents from '@/hooks/useEvents';
 import { User } from '@/types/Users';
+import { Download } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -19,7 +21,7 @@ const defaultValues = {
 
 const ShowDetails = () => {
   const router = useRouter()
-  const {loadEventByUUID, event, actualUser, updatePayment} = useEvents()
+  const {loadEventByUUID, event, actualUser, updatePayment, loading} = useEvents()
   const {uuid} = router.query as {uuid: string}
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({defaultValues});
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -55,33 +57,40 @@ const ShowDetails = () => {
     a.click()
   }
 
+  if (loading) {
+    return <Loading  />
+  }
+
   return (
     <form className='flex flex-col gap-3 w-1/2 mx-auto bg-white p-4' >
       <Input disabled register={register} required={true} name='description' label='Descrição' type='text' errors={errors.description}/>
       <Input disabled register={register} required={true}  name='date' label='Data do churras' type='date' errors={errors.date}/>
       <Input disabled register={register} required={true} name='observations' label='Observações' type='text' errors={errors.observations}/>
-      <Input disabled register={register} required={true} name='valuePerGuest' label='Contribuição' type='number' errors={errors.valuePerGuest}/>
+      <Input disabled register={register} required={true} name='valuePerGuest' label='Contribuição (R$)' type='number' errors={errors.valuePerGuest}/>
       <Input register={register} required={false}  name='beverageIncluded' label='Bebida inclusa?' type='checkbox' checked className=''/>
 
       <section className='flex flex-col'>
         <span className='text-lg'>Quem já pagou?</span>
         {
           event?.guests.filter(guest => guest.paid).map(guest => (
-            <div key={guest.email}>
+            <div key={guest.email} className='flex justify-start items-center'>
               <span>{guest.name}</span>
               {(amIGuest?.uuid === guest.uuid || event.amIOwner) &&
               <Button.Container type='button' color='transparent' onClick={() => handleDownloadReceipt(guest.name, guest.receiptImage)}>
                 <Button.Text title='Baixar Comprovante' />
+                <Button.Icon><Download size={16} /></Button.Icon>
               </Button.Container>}
             </div>
           ))
         }
       </section>
 
-      {!event?.amIOwner && !amIGuest?.paid && <Button.Container color='primary' type='button' onClick={() => setModalIsOpen(true)}>
-        <Button.Text title='Confirmar pagamento' />
-      </Button.Container>}
-      <Button.Container color='primary' type='button' onClick={() => router.push('/events/')}>
+      {!event?.amIOwner && !amIGuest?.paid && 
+        <Button.Container className='mx-auto' color='primary' type='button' onClick={() => setModalIsOpen(true)}>
+          <Button.Text title='Confirmar pagamento' />
+        </Button.Container>
+      }
+      <Button.Container color='primary' type='button' onClick={() => router.push('/events/')} className='mx-auto'>
         <Button.Text title='Voltar' />
       </Button.Container>
       {modalIsOpen && <Modal handleClose={() => setModalIsOpen(false)} handleCancel={() => setModalIsOpen(false)} handleConfirm={handleConfirm}>

@@ -98,7 +98,7 @@ export default async function handler(
     const data = req.body as Partial<EventData>
     const [ userUUID ] = req.query.events as string[]
 
-    const suggestedValueGuest = Math.ceil(data.amountValue!/(data.guests?.length || 1))
+    const suggestedValueGuest = Math.ceil(data.amountValue!/((data.guests?.length || 1)+1))
 
     writeEvent({...data, owner: userUUID, uuid: randomUUID(), valuePerGuest: suggestedValueGuest, guests: data.guests?.map(guest => ({...guest, paid: false, receiptImage: ''}))})
     res.status(201).send({})
@@ -129,7 +129,10 @@ export default async function handler(
     const [userUUID, eventUUID] = req.query.events as string[]
 
     const data = req.body
-    updateEvent(data, eventUUID)
+
+    const suggestedValueGuest = Math.ceil(data.amountValue!/((data.guests?.length || 1)+1))
+
+    updateEvent({...data, valuePerGuest: suggestedValueGuest}, eventUUID)
     res.status(200).send({  })
   }
 
