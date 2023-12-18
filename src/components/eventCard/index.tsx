@@ -14,6 +14,9 @@ const EventCard = ({event: {uuid, description, date, amountValue, valuePerGuest,
   const handleDetails = () => {
     router.push(`/events/show/${uuid}`)
   }
+  const handleEdit = () => {
+    router.push(`/events/edit/${uuid}`)
+  }
   const onDelete = () => {
     if (amIOwner) {
       handleDelete(uuid)
@@ -26,10 +29,10 @@ const EventCard = ({event: {uuid, description, date, amountValue, valuePerGuest,
       </Button.Icon>}
       <span className='font-semibold text-xl'>{new Intl.DateTimeFormat('pt-BR', { month: 'short', day: 'numeric' }).format(new Date(date))}</span>
       <span className='font-semibold text-lg'>{description.toUpperCase()}</span>
-      <div className='flex gap-4 justify-center items-center mb-3'>
+      <div className='flex gap-4 justify-between items-center mb-3'>
         <span className='flex justify-center items-center text-lg gap-1'>
           <PersonStandingIcon className='stroke-yellow-400' />
-          {guests.length}
+          {guests.length + 1}
         </span>
         
         <span className='flex justify-center items-center text-lg gap-1'>
@@ -43,7 +46,7 @@ const EventCard = ({event: {uuid, description, date, amountValue, valuePerGuest,
             <Info size={16} />
           </Button.Icon>
         </Button.Container>
-        {amIOwner && <Button.Container color='primary' size='sm' onClick={() => null}>
+        {amIOwner && <Button.Container color='primary' size='sm' onClick={handleEdit}>
           <Button.Text className='flex-1' title={'Editar'}  />
           <Button.Icon>
             <Edit size={16} />
