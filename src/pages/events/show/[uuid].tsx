@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Button from '@/components/button';
 import Input from '@/components/input';
 import Loading from '@/components/loading';
@@ -8,11 +9,13 @@ import { Download } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 const defaultValues = {
   description: '',
   date: '',
   observations: '',
+  pixKey: '',
   amountValue: 0,
   beverageIncluded: false,
   guests: [] as User[],
@@ -66,13 +69,14 @@ const ShowDetails = () => {
       <Input disabled register={register} required={true} name='description' label='Descrição' type='text' errors={errors.description}/>
       <Input disabled register={register} required={true}  name='date' label='Data do churras' type='date' errors={errors.date}/>
       <Input disabled register={register} required={true} name='observations' label='Observações' type='text' errors={errors.observations}/>
+      <Input register={register} required={true} name='pixKey' label='Chave PIX' type='text' errors={errors.pixKey}/>
       <Input disabled register={register} required={true} name='valuePerGuest' label='Contribuição (R$)' type='number' errors={errors.valuePerGuest}/>
       <Input register={register} required={false}  name='beverageIncluded' label='Bebida inclusa?' type='checkbox' checked className=''/>
 
       <section className='flex flex-col'>
         <span className='text-lg'>Quem já pagou?</span>
         {
-          event?.guests.filter(guest => guest.paid).map(guest => (
+          event && event?.guests?.filter(guest => guest.paid).map(guest => (
             <div key={guest.email} className='flex justify-start items-center'>
               <span>{guest.name}</span>
               {(amIGuest?.uuid === guest.uuid || event.amIOwner) &&
@@ -96,7 +100,11 @@ const ShowDetails = () => {
       {modalIsOpen && <Modal handleClose={() => setModalIsOpen(false)} handleCancel={() => setModalIsOpen(false)} handleConfirm={handleConfirm}>
         <span>
           Chave PIX: <span className='cursor-copy hover:text-yellow-600' onClick={(e) => {
-            navigator.clipboard.writeText(e.currentTarget.innerText)
+            navigator.clipboard.writeText(e.currentTarget.innerText).then(() => {
+              toast('Chave PIX copiada!', {
+                icon: '📝'
+              })
+            })
           }}>{event?.pixKey}</span>
         </span>
         <input ref={inputRef} type="file" name="comprovante" id="comprovante" />

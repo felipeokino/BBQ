@@ -1,36 +1,30 @@
 import auth from '@/helpers/getAuth';
-import { EventData } from '@/types/Events';
-import { User } from '@/types/Users';
-import axios from 'axios';
+import { AxiosClient } from '@/services/clients/axiosClient';
+import { HTTP } from '@/services/http';
+import { EventData, Guest } from '@/types/Events';
+import { AxiosResponse } from 'axios';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function useGuests() {
   const user = auth.getAuthenticatedUser()
-  const [guests, setGuests] = useState<User[]>([])
+  const [guests, setGuests] = useState<Guest[]>([])
   const [event, setEvent] = useState<EventData|null>(null)
   const [loading, setLoading] = useState(false);
+  const client = new HTTP(new AxiosClient());
 
-  async function loadGuests() {
+  const loadGuests = async () => {
     setLoading(true)
     try {
-      const {data, status} = await axios.get<{list: User[]}>(`/api/users/${user.uuid}`)
+      const {data, status} = await client.get<AxiosResponse<{list: Guest[]}>>(`/api/users/${user.uuid}`)
       
       if (status === 200) {
         setGuests(data.list.filter(item => item.uuid !== user.uuid))
       }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function loadEventByUUID(eventUUID: string) {
-    setLoading(true)
-    try {
-      const {data, status} = await axios.get<{event: EventData}>(`/api/user/${user.uuid}/${eventUUID}`)
-      
-      if (status === 200) {
-        setEvent(data.event)
-      }
+    } catch {
+      toast('iiiii deu erro! Tenta mais tarde', {
+        icon: '🤡'
+      })
     } finally {
       setLoading(false)
     }

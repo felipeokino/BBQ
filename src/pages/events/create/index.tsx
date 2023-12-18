@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Button from '@/components/button';
 import Input from '@/components/input';
 import isAuth from '@/components/isAuth';

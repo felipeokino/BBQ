@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Button from '@/components/button';
 import Input from '@/components/input';
 import isAuth from '@/components/isAuth';
@@ -14,6 +15,7 @@ const defaultValues = {
   description: '',
   date: '',
   observations: '',
+  pixKey: '',
   amountValue: 0,
   beverageIncluded: false,
   guests: [] as User[]
@@ -21,13 +23,16 @@ const defaultValues = {
 
 const EditEvent = () => {
   const { updateEvent, loadEventByUUID, event, loading } = useEvents()
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm({defaultValues});
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({ defaultValues });
   const [isOpen, setIsOpen] = useState(false)
   const [tempGuest, setTempGuest] = useState<string[]>([])
   const {guests, loadGuests} = useGuests();
   const router = useRouter();
   const {uuid} = router.query as {uuid: string}
-
+  const copyGuest = guests?.map(guest => {
+    const eventGuest = event?.guests.find(eventGuest => guest.uuid === eventGuest.uuid)
+    return eventGuest || guest
+  })
   useEffect(() => {
     loadEventByUUID(uuid)
   }, [uuid])
@@ -45,14 +50,13 @@ const EditEvent = () => {
   }, [])
 
   const handleAdd = () => {
-    setValue('guests', guests.filter(guest => tempGuest.includes(guest.uuid)))
+    setValue('guests', copyGuest.filter(guest => tempGuest.includes(guest.uuid)))
     setIsOpen(false)
   }
 
   const onSubmit = (dataParams: any) => {
-    updateEvent(uuid, {...event, ...dataParams}).then(() => {
-      router.push('/events')
-    })
+    console.log(dataParams)
+    updateEvent(uuid, {...event, ...dataParams})
   }
 
   const handleCancel = () => {
@@ -66,11 +70,12 @@ const EditEvent = () => {
       ): (
         <>
           <div className='flex flex-col justify-start items-center p-4 text-black w-1/2 min-w-[600px] h-1/2 min-h-[600px]  mx-auto'>
-            <span className='text-2xl'>Como vai ser o churras?</span>
+            <span className='text-2xl mb-6'>Edição, me adiciona ai!</span>
             <form className='flex flex-col gap-3' onSubmit={handleSubmit(onSubmit)}>
               <Input register={register} required={true} name='description' label='Descrição' type='text' errors={errors.description}/>
               <Input register={register} required={true}  name='date' label='Data do churras' type='date' errors={errors.date}/>
               <Input register={register} required={true} name='observations' label='Observações' type='text' errors={errors.observations}/>
+              <Input register={register} required={true} name='pixKey' label='Chave PIX' type='text' errors={errors.pixKey}/>
               <Input register={register} required={true} name='amountValue' label='Total' type='number' errors={errors.amountValue}/>
               <Input register={register} required={false}  name='beverageIncluded' label='Bebida inclusa?' type='checkbox' />
 
@@ -83,7 +88,7 @@ const EditEvent = () => {
                 <Button.Text title='Add convidado' />
               </Button.Container>
               <Button.Container color='primary' type='submit'>
-                <Button.Text title='Finalizar' />
+                <Button.Text title='Salvar' />
               </Button.Container>
               
             </form>
@@ -94,7 +99,7 @@ const EditEvent = () => {
               setIsOpen={setIsOpen}
               setTempGuest={setTempGuest}
               tempGuest={tempGuest}
-              guests={guests}
+              guests={copyGuest}
             />
           } 
         </>
@@ -124,10 +129,8 @@ const AddGuestModal = ({setIsOpen, setTempGuest, tempGuest, handleAdd, guests}: 
     setTempGuest([...tempGuest.filter(guest => guest !== guestUUID)])
   }
 
- 
-
   return (
-    <Modal handleClose={() => setIsOpen(false)} handleConfirm={handleAdd} confirmTitle='Adicionar'>
+    <Modal handleClose={() => setIsOpen(false)} handleConfirm={handleAdd} confirmTitle='Salvar'>
       <section  className='h-[350px] overflow-auto w-full p-4 flex flex-col gap-2'>
         {guests.map((guest, idx) => (
           <div onClick={(e) => {
