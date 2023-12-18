@@ -1,5 +1,6 @@
 import { User } from '@/types/Users';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 
 const basePath = 'src/pages/api/users/'
@@ -50,6 +51,6 @@ export default function handler(
 
   if (req.method === 'POST') {
     const data = req.body
-    createUser(data)
+    createUser({...data, uuid: randomUUID()})
   }
 }
