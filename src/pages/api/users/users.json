@@ -1,0 +1,32 @@
+[
+  {
+    "uuid": "cc0651bd-4584-497f-bdba-e5f2af0d98b6",
+    "name": "Felipe Okino",
+    "email": "felipe.okino@gmail.com",
+    "password": "123456"
+  },
+  {
+    "uuid": "03f94359-be98-4b14-99ae-6049e74fd8f3",
+    "name": "Anna",
+    "email": "anna@gmail.com",
+    "password": "123456"
+  },
+  {
+    "uuid": "4db0c8cf-aa7f-4daa-a6a3-fc2657ecb92d",
+    "name": "Bob",
+    "email": "bob@gmail.com",
+    "password": "123456"
+  },
+  {
+    "uuid": "5d2f6793-2e79-4c76-8001-3fe8fca7f7be",
+    "name": "Tio do Pavê",
+    "email": "ehpave@gmail.com",
+    "password": "123456"
+  },
+  {
+    "uuid": "69e4926f-23c1-4147-b875-0cc370832ef7",
+    "name": "Ronaldinho",
+    "email": "bruxo@gmail.com",
+    "password": "123456"
+  }
+]
