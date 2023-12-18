@@ -29,7 +29,7 @@ const createUser = (dataParams: User) => {
     const parsedFile = JSON.parse(file.toString()) as User[]
 
     parsedFile.push(dataParams)
-    fs.writeFileSync(`${basePath}user.json`, JSON.stringify(parsedFile))
+    fs.writeFileSync(`${basePath}users.json`, JSON.stringify(parsedFile))
     
   } catch(err) {
     console.error(err)
@@ -52,5 +52,7 @@ export default function handler(
   if (req.method === 'POST') {
     const data = req.body
     createUser({...data, uuid: randomUUID()})
+
+    return res.status(201).json({ })
   }
 }
