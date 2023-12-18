@@ -13,6 +13,7 @@ const defaultValues = {
   description: '',
   date: '',
   observations: '',
+  pixKey: '',
   amountValue: 0,
   beverageIncluded: false,
   guests: [] as User[]
@@ -53,6 +54,7 @@ const CreateEvent = () => {
           <Input register={register} required={true} name='description' label='Descrição' type='text' errors={errors.description}/>
           <Input register={register} required={true}  name='date' label='Data do churras' type='date' errors={errors.date}/>
           <Input register={register} required={true} name='observations' label='Observações' type='text' errors={errors.observations}/>
+          <Input register={register} required={true} name='pixKey' label='Chave PIX' type='text' errors={errors.pixKey}/>
           <Input register={register} required={true} name='amountValue' label='Total' type='number' errors={errors.amountValue}/>
           <Input register={register} required={false}  name='beverageIncluded' label='Bebida inclusa?' type='checkbox' />
 
