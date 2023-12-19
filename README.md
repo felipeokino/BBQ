@@ -44,3 +44,17 @@ Start the server
 ## Important Notes
 - I didn't implement tests
 - I made deploy in vercel, but the api I used not worked
+- Already exists some users created
+  ~~~ bash
+  email: anna@gmail.com
+  password: 123456
+
+  email: bob@gmail.com
+  password: 123456
+
+  email: ehpave@gmail.com
+  password: 123456
+
+  email: bruxo@gmail.com
+  password: 123456
+  ~~~
