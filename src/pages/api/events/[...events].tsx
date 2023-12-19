@@ -37,7 +37,7 @@ const writeEvent = (eventData: Partial<EventData>) => {
 const readEvents = (uuid: string): EventData[] => {
   try {
     const file = fs.readFileSync(`${basePath}events.json`)
-    return JSON.parse(file.toString()).filter((event: EventData) => event.guests.find(guest => guest.uuid === uuid) || event.owner === uuid).map((event: EventData) => ({...event, amIOwner: event.owner === uuid}))
+    return JSON.parse(file.toString()).filter((event: EventData) => event?.guests.find(guest => guest.uuid === uuid) || event?.owner === uuid).map((event: EventData) => ({...event, amIOwner: event.owner === uuid}))
   } catch (err) {
     console.error(err)
   }
